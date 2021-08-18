@@ -74,7 +74,9 @@ class VendaController extends AppController
 		$this->Venda->set($request);
 		$validator = ($this->Venda->validates());
 		if($validator) {
-			$message = ($this->Venda->save()) ? $this->name.' Salvo!' : 'Error';
+			$message['success'] = true;
+			$message['data'] = ($this->Venda->save()) ? $request : 'Error';
+			$message['data']['id'] = $this->Venda->getLastInsertID();
 		}else{
 			$message = $this->Venda->validationErrors;
 		}

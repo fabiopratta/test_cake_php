@@ -17,13 +17,28 @@ class VendedoreController extends AppController implements ControllerRestInterfa
 	 */
 	public $components = ['RequestHandler'];
 
+
+	protected $result;
+
 	/**
 	 * Retornar todos registros no metodo GET {URL}/{CONTROLLER}
 	 * @return mixed|void
 	 */
 	public function index() {
 		$vendedores = $this->Vendedore->find('all');
-		$this->set(['vendedores' => $vendedores,'_serialize' => ['vendedores']]);
+
+		$total_venda = 0;
+		$total_comissao = 0;
+		foreach($vendedores as $vendedor){
+			foreach($vendedor['Venda'] as $venda) {
+				$total_venda = $total_venda + $venda['valor_venda'];
+				$total_comissao = $total_comissao + $venda['valor_comissao'];
+			}
+			$vendedor['total_venda'] = $total_venda;
+			$vendedor['total_comissao'] = $total_comissao;
+			$vendedoresArr[] = $vendedor;
+		}
+		$this->set(['vendedoresArr' => $vendedoresArr,'_serialize' => ['vendedoresArr']]);
 	}
 
 	/**
@@ -31,8 +46,18 @@ class VendedoreController extends AppController implements ControllerRestInterfa
 	 * @param $id
 	 * @return mixed|void
 	 */
-	public function view($id) {
+	public function view($id)
+	{
 		$vendedor = $this->Vendedore->findById($id);
+
+		$total_venda = 0;
+		$total_comissao = 0;
+		foreach ($vendedor['Venda'] as $venda) {
+			$total_venda = $total_venda + $venda['valor_venda'];
+			$total_comissao = $total_comissao + $venda['valor_comissao'];
+		}
+		$vendedor['total_venda'] = $total_venda;
+		$vendedor['total_comissao'] = $total_comissao;
 		$this->set(['vendedor' => $vendedor,'_serialize' => ['vendedor']]);
 	}
 
@@ -76,7 +101,9 @@ class VendedoreController extends AppController implements ControllerRestInterfa
 		$this->Vendedore->set($request);
 		$validator = ($this->Vendedore->validates());
 		if($validator) {
-			$message = ($this->Vendedore->save()) ? $this->name.' Salvo!' : 'Error';
+			$message['success'] = true;
+			$message['data'] = ($this->Vendedore->save()) ? $request : 'Error';
+			$message['data']['id'] = $this->Vendedore->getLastInsertID();
 		}else{
 			$message = $this->Vendedore->validationErrors;
 		}
