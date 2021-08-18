@@ -1,0 +1,23 @@
+version: "3"
+services:
+  db:
+    image: 'bitnami/mariadb:latest'
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+  adminer:
+     image: adminer
+     restart: always
+     ports:
+       - 8080:8080
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - .:/var/www/html
+    ports:
+      - 8000:80
+    depends_on:
+      - db
+
