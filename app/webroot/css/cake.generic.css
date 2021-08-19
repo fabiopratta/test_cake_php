@@ -737,6 +737,10 @@ pre {
 	color: #0a0;
 }
 
+.text-right {
+	text-align: right;
+}
+
 /** Elements **/
 #url-rewriting-warning {
 	display:none;

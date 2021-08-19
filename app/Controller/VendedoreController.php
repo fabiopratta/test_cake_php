@@ -29,6 +29,7 @@ class VendedoreController extends AppController implements ControllerRestInterfa
 
 		$total_venda = 0;
 		$total_comissao = 0;
+		$vendedoresArr= [];
 		foreach($vendedores as $vendedor){
 			foreach($vendedor['Venda'] as $venda) {
 				$total_venda = $total_venda + $venda['valor_venda'];
